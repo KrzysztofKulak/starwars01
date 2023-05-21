@@ -1,3 +1,7 @@
+import datetime
+
+import dateutil.parser as date_parser
+
 from characters.clients.abstract import StarWarsClient
 from starwarsarchive import settings
 
@@ -42,7 +46,7 @@ class StarWarsSWAPIClient(StarWarsClient):
                         character["homeworld"].split("/")[-2]
                     )
                 character["homeworld"] = planets[character["homeworld"]]["name"]
-            character["date"] = character["edited"]
+            character["date"] = date_parser.isoparse(character["edited"]).strftime("%Y-%m-%d")
             for key in self.FIELDS_TO_BE_OMITTED:
                 character.pop(key, None)
         return characters

@@ -81,12 +81,14 @@ class TestStarWarsClient(TestCase):
                 {
                     "name": "Luke Skywalker",
                     "birth_year": "19BBY",
-                    "homeworld": "https://swapi.dev/api/planets/1/"
+                    "homeworld": "https://swapi.dev/api/planets/1/",
+                    "edited": "2014-12-20T21:17:56.891000Z"
                 },
                 {
                     "name": "Stachu Skywalker",
                     "birth_year": "13BBY",
-                    "homeworld": "https://swapi.dev/api/planets/2/"
+                    "homeworld": "https://swapi.dev/api/planets/2/",
+                    "edited": "2014-12-20T21:17:50.309000Z"
                 }
             ],
             "next": None
@@ -108,17 +110,21 @@ class TestStarWarsClient(TestCase):
             ]
             response = test_client.get_all_characters_parsed()
         self.assertEqual(response,
-                         [{
-                             "name": "Luke Skywalker",
-                             "birth_year": "19BBY",
-                             "homeworld": "Tatooine"
-                         },
-                         {
-                             "name": "Stachu Skywalker",
-                             "birth_year": "13BBY",
-                             "homeworld": "Alderaan"
-                         }]
-        )
+                         [
+                             {
+                                 "name": "Luke Skywalker",
+                                 "birth_year": "19BBY",
+                                 "homeworld": "Tatooine",
+                                 "date": "2014-12-20"
+                             },
+                             {
+                                 "name": "Stachu Skywalker",
+                                 "birth_year": "13BBY",
+                                 "homeworld": "Alderaan",
+                                 "date": "2014-12-20"
+                             }
+                         ]
+                         )
         self.assertEqual(mock_get.mock_calls, [
             call('https://swapi.dev/api/people'),
             call('https://swapi.dev/api/planets/1'),
