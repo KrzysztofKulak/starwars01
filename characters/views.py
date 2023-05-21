@@ -1,16 +1,18 @@
 import petl
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
 from characters.clients.abstract import StarWarsClient
 from characters.models import Collection
-from characters.services import fetch_characters_data, count_values
+from characters.services import fetch_characters_data, count_values, InvalidColumnNameException
 
 """
 IMPROVEMENT IDEA:
 1. adding DRF and exposing an API to be consumed by e.g. 
-React or mobile app, or some other server-side service
+React or mobile app, or some other server-side service.
 2. adding error handlers for StarWarsClient originating
-exceptions to handle service being down 
+exceptions to handle service being down and handling for 
+InvalidColumnNameException.
 """
 
 def fetch_collection(request, star_wars_service_client: StarWarsClient):
@@ -52,9 +54,16 @@ def collection_details(request, collection_id):
         }
     )
 
-def collection_value_count(request, collection_id):
+def collection_value_counts(request, collection_id):
     columns = request.GET.get("columns", "homeworld,birth_year").split(",")
-    value_counts = count_values(collection_id, columns)
+    try:
+        value_counts = count_values(collection_id, columns)
+    except InvalidColumnNameException:
+        """
+        IMPROVEMENT IDEA:
+        handle it with GUI.
+        """
+        return JsonResponse(data={"error": "invalid columns provided"}, status=400)
     return render(
         request,
         "collection_details_value_counts.html",

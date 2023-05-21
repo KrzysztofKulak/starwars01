@@ -3,6 +3,7 @@ from uuid import UUID
 
 import petl
 from django.core.files import File
+from petl import FieldSelectionError
 
 from characters.clients.abstract import StarWarsClient
 from characters.models import Collection
@@ -28,10 +29,15 @@ def fetch_characters_data(star_wars_client: StarWarsClient):
     os.remove(temp_csv_file)
 
 
+class InvalidColumnNameException(Exception):
+    pass
+
+
 def count_values(collection_id: UUID, columns: list[str]) -> list[dict]:
-    if len(columns) < 2:
-        return []
     collection = Collection.objects.get(pk=collection_id)
     items = petl.fromcsv(collection.csv_file.path)
-    value_counts = list(petl.dicts(petl.valuecounts(items, *columns)))
+    try:
+        value_counts = list(petl.dicts(petl.valuecounts(items, *columns)))
+    except FieldSelectionError:
+        raise InvalidColumnNameException()
     return value_counts
