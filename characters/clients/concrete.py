@@ -14,35 +14,25 @@ class StarWarsSWAPIClient(StarWarsClient):
         url = f"{self.BASE_URL}/people"
         characters = []
         while url:
-            response = self._get(url, use_base_url=False)
+            response = self._get(url)
             url = response["next"]
             characters.extend(response["results"])
         return characters
 
-    def get_planet(self, id: int) -> dict:
-        url = f"planets/{id}"
-        return self._get(url)
+    def get_all_planets(self) -> list[dict]:
+        url = f"{self.BASE_URL}/planets"
+        planets = []
+        while url:
+            response = self._get(url)
+            url = response["next"]
+            planets.extend(response["results"])
+        return planets
 
     def get_all_characters(self) -> list[dict]:
         characters = self.get_all_characters_raw()
-        planets = {}
+        planets = {planet["url"]: planet for planet in self.get_all_planets()}
         for character in characters:
-            """ 
-            IMPROVEMENT IDEA:
-            This could be generalized to map all link-fields to a name of the resource, 
-            mapping of the field from the target resource to be used could look like:
-            {
-            "homeworld": "name",
-            "films": "title"
-            }
-            and so on, the fact that some link-fields are lists would have to be taken 
-            into consideration.
-            """
             if character["homeworld"] != "n/a":
-                if not planets.get(character["homeworld"]):
-                    planets[character["homeworld"]] = self.get_planet(
-                        character["homeworld"].split("/")[-2]
-                    )
                 character["homeworld"] = planets[character["homeworld"]]["name"]
             character["date"] = date_parser.isoparse(character["edited"]).strftime("%Y-%m-%d")
             for key in self.FIELDS_TO_BE_OMITTED:

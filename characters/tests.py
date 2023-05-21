@@ -23,26 +23,26 @@ class TestBaseClient(TestCase):
 
     def test_base_client_get_returns_response(self):
         class TestClient(BaseClient):
-            BASE_URL = "https://test.url"
+            ...
 
         test_client = TestClient()
         expected_response = {"test": "value"}
         with patch("characters.clients.abstract.requests.get") as mock_get:
             mock_get.return_value = get_mock_response(expected_response)
-            response = test_client._get("test_url")
+            response = test_client._get("https://test.url/")
         self.assertEqual(response, expected_response)
-        mock_get.assert_called_once_with("https://test.url/test_url")
+        mock_get.assert_called_once_with("https://test.url/")
 
     def test_base_client_get_raises_exceptions_for_http_errors(self):
         class TestClient(BaseClient):
-            BASE_URL = "https://test.url"
+            ...
 
         test_client = TestClient()
         with patch("characters.clients.abstract.requests.get") as mock_get:
             mock_get.return_value = get_mock_response({"detail": "Not found"}, 404)
             with self.assertRaises(HTTPError):
-                test_client._get("test_url")
-        mock_get.assert_called_once_with("https://test.url/test_url")
+                test_client._get("https://test.url/")
+        mock_get.assert_called_once_with("https://test.url/")
 
 
 class TestStarWarsSWAPIClient(TestCase):
@@ -66,17 +66,26 @@ class TestStarWarsSWAPIClient(TestCase):
             call('https://swapi.dev/api/people/?page=2')
         ])
 
-    def test_get_planet(self):
+    def test_get_all_planet(self):
         test_client = StarWarsSWAPIClient()
         expected_response = {
-            "name": "Tatooine",
-            "rotation_period": "23"
+            "next": None,
+            "results": [
+                {
+                    "name": "Tatooine",
+                    "rotation_period": "23"
+                },
+                {
+                    "name": "Alderaan",
+                    "rotation_period": "24"
+                },
+            ]
         }
         with patch("characters.clients.abstract.requests.get") as mock_get:
             mock_get.return_value = get_mock_response(expected_response)
-            response = test_client.get_planet(1)
-        self.assertEqual(response, expected_response)
-        mock_get.assert_called_once_with("https://swapi.dev/api/planets/1")
+            response = test_client.get_all_planets()
+        self.assertEqual(response, expected_response["results"])
+        mock_get.assert_called_once_with("https://swapi.dev/api/planets")
 
     def test_get_all_characters(self):
         test_client = StarWarsSWAPIClient()
@@ -97,20 +106,25 @@ class TestStarWarsSWAPIClient(TestCase):
             ],
             "next": None
         }
-        expected_planet_1_response = {
-            "name": "Tatooine",
-            "rotation_period": "23"
-        }
-        expected_planet_2_response = {
-            "name": "Alderaan",
-            "rotation_period": "24"
+        expected_planet_response = {
+            "next": None,
+            "results": [
+                {
+                    "name": "Tatooine",
+                    "url": "https://swapi.dev/api/planets/1/",
+                    "rotation_period": "23"
+                }, {
+                    "name": "Alderaan",
+                    "url": "https://swapi.dev/api/planets/2/",
+                    "rotation_period": "24"
+                }
+            ]
         }
 
         with patch("characters.clients.abstract.requests.get") as mock_get:
             mock_get.side_effect = [
                 get_mock_response(expected_people_response),
-                get_mock_response(expected_planet_1_response),
-                get_mock_response(expected_planet_2_response)
+                get_mock_response(expected_planet_response),
             ]
             response = test_client.get_all_characters()
         self.assertEqual(response,
@@ -131,8 +145,7 @@ class TestStarWarsSWAPIClient(TestCase):
                          )
         self.assertEqual(mock_get.mock_calls, [
             call('https://swapi.dev/api/people'),
-            call('https://swapi.dev/api/planets/1'),
-            call('https://swapi.dev/api/planets/2')
+            call('https://swapi.dev/api/planets')
         ])
 
 

@@ -9,22 +9,16 @@ logger = logging.getLogger(__name__)
 
 
 class BaseClient(abc.ABC):
-    BASE_URL: str
-
-    def _get(self, url: str, use_base_url: bool = True) -> dict:
-        if use_base_url:
-            path = f"{self.BASE_URL}/{url}"
-        else:
-            path = url
-        logger.info(f"Making a [GET] request to {path}.")
+    def _get(self, url: str) -> dict:
+        logger.info(f"Making a [GET] request to {url}.")
         try:
-            response = requests.get(path)
+            response = requests.get(url)
             response.raise_for_status()
         except HTTPError as exc:
-            logger.error(f"An HTTP error has occurred when calling {path}: {exc}")
+            logger.error(f"An HTTP error has occurred when calling {url}: {exc}")
             raise
         except JSONDecodeError:
-            logger.error(f"Cannot parse response from {path}.")
+            logger.error(f"Cannot parse response from {url}.")
             raise
         return response.json()
 
