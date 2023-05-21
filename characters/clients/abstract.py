@@ -5,16 +5,17 @@ from json import JSONDecodeError
 import requests
 from requests import HTTPError
 
-from starwarsarchive import settings
-
 logger = logging.getLogger(__name__)
 
 
 class BaseClient(abc.ABC):
     BASE_URL: str
 
-    def get(self, url: str) -> dict:
-        path = f"{self.BASE_URL}/{url}"
+    def _get(self, url: str, use_base_url: bool = True) -> dict:
+        if use_base_url:
+            path = f"{self.BASE_URL}/{url}"
+        else:
+            path = url
         logger.info(f"Making a [GET] request to {path}.")
         try:
             response = requests.get(path)
@@ -28,5 +29,20 @@ class BaseClient(abc.ABC):
         return response.json()
 
 
-class StarWarsAbstractClient(BaseClient):
-    BASE_URL = settings.SWAPI_URL
+class StarWarsClient(BaseClient):
+
+    @abc.abstractmethod
+    def get_all_characters(self) -> list[dict]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_all_planets(self) -> list[dict]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_planet(self, id: int) -> dict:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_all_characters_with_planets(self) -> list[dict]:
+        raise NotImplementedError
