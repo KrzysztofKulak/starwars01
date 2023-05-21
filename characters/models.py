@@ -1,18 +1,6 @@
 import uuid
 
 from django.db import models
-from django.utils.deconstruct import deconstructible
-
-
-@deconstructible
-class RandomFileName:
-    def __init__(self, path):
-        self.path = path
-
-    def __call__(self, instance, filename):
-        extension = filename.split('.')[-1]
-        filename = f'{uuid.uuid4()}.{extension}'
-        return self.path + filename
 
 
 class Collection(models.Model):

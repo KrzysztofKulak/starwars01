@@ -15,6 +15,7 @@ exceptions to handle service being down and handling for
 InvalidColumnNameException.
 """
 
+
 def fetch_collection(request, star_wars_service_client: StarWarsClient):
     if request.method == "POST":
         fetch_characters_data(star_wars_service_client)
@@ -53,6 +54,7 @@ def collection_details(request, collection_id):
             "next_limit": limit + 10,
         }
     )
+
 
 def collection_value_counts(request, collection_id):
     columns = request.GET.get("columns", "homeworld,birth_year").split(",")

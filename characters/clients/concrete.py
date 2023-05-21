@@ -10,23 +10,21 @@ class StarWarsSWAPIClient(StarWarsClient):
     ]
     BASE_URL = settings.SWAPI_URL
 
-    def get_all_characters_raw(self) -> list[dict]:
-        url = f"{self.BASE_URL}/people"
-        characters = []
+    def _get_paginated_resource(self, url):
+        items = []
         while url:
             response = self._get(url)
             url = response["next"]
-            characters.extend(response["results"])
-        return characters
+            items.extend(response["results"])
+        return items
+
+    def get_all_characters_raw(self) -> list[dict]:
+        url = f"{self.BASE_URL}/people"
+        return self._get_paginated_resource(url)
 
     def get_all_planets(self) -> list[dict]:
         url = f"{self.BASE_URL}/planets"
-        planets = []
-        while url:
-            response = self._get(url)
-            url = response["next"]
-            planets.extend(response["results"])
-        return planets
+        return self._get_paginated_resource(url)
 
     def get_all_characters(self) -> list[dict]:
         characters = self.get_all_characters_raw()
