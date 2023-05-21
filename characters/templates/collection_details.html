@@ -26,6 +26,8 @@
             {% endfor %}
         </tbody>
     </table>
+    <!--  Could be hidden after reaching max limit and/or for displaying all  -->
+    <a href="{{id}}?limit={{ next_limit }}" class="btn btn-primary mb-3">Load more</a>
 </div>
 </body>
 </html>
