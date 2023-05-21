@@ -120,4 +120,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+# Using .dev since .co is not maintained anymore: https://swapi.dev/about
 SWAPI_URL = "https://swapi.dev/api"

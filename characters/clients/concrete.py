@@ -1,5 +1,3 @@
-import datetime
-
 import dateutil.parser as date_parser
 
 from characters.clients.abstract import StarWarsClient
@@ -12,7 +10,7 @@ class StarWarsSWAPIClient(StarWarsClient):
     ]
     BASE_URL = settings.SWAPI_URL
 
-    def get_all_characters(self) -> list[dict]:
+    def get_all_characters_raw(self) -> list[dict]:
         url = f"{self.BASE_URL}/people"
         characters = []
         while url:
@@ -25,8 +23,8 @@ class StarWarsSWAPIClient(StarWarsClient):
         url = f"planets/{id}"
         return self._get(url)
 
-    def get_all_characters_parsed(self) -> list[dict]:
-        characters = self.get_all_characters()
+    def get_all_characters(self) -> list[dict]:
+        characters = self.get_all_characters_raw()
         planets = {}
         for character in characters:
             """ 

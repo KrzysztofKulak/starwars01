@@ -3,11 +3,11 @@ import os
 import petl
 from django.core.files import File
 
-from characters.clients.concrete import StarWarsSWAPIClient
+from characters.clients.abstract import StarWarsClient
 from characters.models import Collection
 
 
-def fetch_characters_data():
+def fetch_characters_data(star_wars_client: StarWarsClient):
     collection = Collection()
     """
     IMPROVEMENT IDEA:
@@ -17,7 +17,7 @@ def fetch_characters_data():
     by a Celery worker, where instance would be updated with the info
     the newly created csv file.
     """
-    characters = StarWarsSWAPIClient().get_all_characters_parsed()
+    characters = star_wars_client.get_all_characters()
     characters_table = petl.fromdicts(characters)
     temp_csv_file = f"{collection.id}.csv"
     petl.tocsv(characters_table, temp_csv_file)

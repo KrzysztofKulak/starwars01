@@ -30,15 +30,6 @@ class BaseClient(abc.ABC):
 
 
 class StarWarsClient(BaseClient):
-
     @abc.abstractmethod
     def get_all_characters(self) -> list[dict]:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_planet(self, id: int) -> dict:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_all_characters_parsed(self) -> list[dict]:
         raise NotImplementedError
