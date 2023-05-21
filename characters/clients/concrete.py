@@ -22,13 +22,13 @@ class StarWarsSWAPIClient(StarWarsClient):
         url = f"{self.BASE_URL}/people"
         return self._get_paginated_resource(url)
 
-    def get_all_planets(self) -> list[dict]:
+    def get_all_planets_raw(self) -> list[dict]:
         url = f"{self.BASE_URL}/planets"
         return self._get_paginated_resource(url)
 
     def get_all_characters(self) -> list[dict]:
         characters = self.get_all_characters_raw()
-        planets = {planet["url"]: planet for planet in self.get_all_planets()}
+        planets = {planet["url"]: planet for planet in self.get_all_planets_raw()}
         for character in characters:
             if character["homeworld"] != "n/a":
                 character["homeworld"] = planets[character["homeworld"]]["name"]

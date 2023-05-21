@@ -8,7 +8,7 @@ Main page is accessible at the `/collections` url.
 
 required: `python 3.10` (app is using modern typing notation and won't work on older versions), `pip`
 
-in terminal in project's root directory (external `/starwarsarchive` catalogue) run
+in terminal in project's root directory run
 
 ```
 pip install -r requirements.txt

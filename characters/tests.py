@@ -83,7 +83,7 @@ class TestStarWarsSWAPIClient(TestCase):
         }
         with patch("characters.clients.abstract.requests.get") as mock_get:
             mock_get.return_value = get_mock_response(expected_response)
-            response = test_client.get_all_planets()
+            response = test_client.get_all_planets_raw()
         self.assertEqual(response, expected_response["results"])
         mock_get.assert_called_once_with("https://swapi.dev/api/planets")
 
