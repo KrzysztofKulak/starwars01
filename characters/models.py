@@ -17,7 +17,7 @@ class RandomFileName:
 
 class Collection(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    csv_file = models.FileField(upload_to=RandomFileName('characters/'))
+    csv_file = models.FileField(upload_to='characters/')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
