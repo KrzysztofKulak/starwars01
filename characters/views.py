@@ -1,42 +1,43 @@
 import os
 
 import petl
-from django.core.files import File
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from django.views.decorators.csrf import csrf_exempt
 
-from characters.clients.concrete import StarWarsSWAPIClient
 from characters.models import Collection
+from characters.services import fetch_characters_data
 
 
-@csrf_exempt
-def collections(request):
+def fetch_collection(request):
     if request.method == "POST":
-        collection = Collection()
-        """
-        IMPROVEMENT IDEA:
-        new Collection instance could be saved with a placeholder value
-        and returned to a rendered list, but SWAPI calling and csv saving 
-        operation could be moved into a Celery task to be run asynchronously
-        by a Celery worker, where instance would be updated with the info
-        the newly created csv file.
-        """
-        characters = StarWarsSWAPIClient().get_all_characters_parsed()
-        characters_table = petl.fromdicts(characters)
-        temp_csv_file = f"{collection.id}.csv"
-        petl.tocsv(characters_table, temp_csv_file)
-        with open(temp_csv_file, 'rb') as f:
-            collection.csv_file = File(f)
-            collection.save()
-        os.remove(temp_csv_file)
-    collections = Collection.objects.all()
-    return JsonResponse(
+        fetch_characters_data()
+        return redirect('collection_list')
+
+def collection_list(request):
+    collections = Collection.objects.order_by('-created_at').all()
+    return render(
+        request,
+        "collection_list.html",
         {
-            'results': [
-                f"{collection.id} {collection.created_at}"
+            "collections": [
+                {"id": collection.id, "string": str(collection)}
                 for collection in collections
             ]
-        },
-        status=200)
+        }
+    )
+
+
+def collection_details(request, collection_id):
+    collection = Collection.objects.get(pk=collection_id)
+    items = petl.dicts(petl.fromcsv(collection.csv_file.path))
+    return render(
+        request,
+        "collection_details.html",
+        {
+            "collection": str(collection),
+            "headers": items[0].keys() if items else [],
+            "items": items
+        }
+    )

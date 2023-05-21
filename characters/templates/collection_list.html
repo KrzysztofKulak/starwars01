@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Collections</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <h1>Collections</h1>
+    <form id="fetchForm" method="post" action="fetch">
+      {% csrf_token %}
+      <button id="fetchButton" type="submit" class="btn btn-primary">Fetch</button>
+    </form>
+    <table class="table table-striped">
+        <tbody>
+        {% for collection in collections %}
+            <tr>
+                <td>
+                    <a href="{{ collection.id }}" class="btn btn-link">{{ collection.string }}</a>
+                </td>
+            </tr>
+    {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.getElementById("fetchForm").addEventListener("submit", function() {
+        document.getElementById("fetchButton").disabled = true;
+        document.getElementById("fetchButton").textContent = "Fetching..."
+    });
+</script>
+
+</body>
+</html>

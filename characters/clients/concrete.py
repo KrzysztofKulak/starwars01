@@ -4,7 +4,7 @@ from starwarsarchive import settings
 
 class StarWarsSWAPIClient(StarWarsClient):
     FIELDS_TO_BE_OMITTED = [
-        "films", "species", "url", "created", "edited", "vehicles", "starships", "date"
+        "films", "species", "url", "created", "edited", "vehicles", "starships"
     ]
     BASE_URL = settings.SWAPI_URL
 
