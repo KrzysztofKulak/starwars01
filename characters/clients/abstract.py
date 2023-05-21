@@ -36,10 +36,6 @@ class StarWarsClient(BaseClient):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_all_planets(self) -> list[dict]:
-        raise NotImplementedError
-
-    @abc.abstractmethod
     def get_planet(self, id: int) -> dict:
         raise NotImplementedError
 
