@@ -28,7 +28,9 @@
     </table>
     <!--
     IMPROVEMENT IDEA:
-    Could be hidden after reaching max limit and/or for displaying all
+    1. Could be hidden after reaching max limit and/or for displaying all
+    2. Could load only additional 10 using petl.rowslice and avoid reloading the
+    whole page
     -->
     <a href="{{id}}?limit={{ next_limit }}" class="btn btn-primary mb-3">Load more</a>
 </div>
