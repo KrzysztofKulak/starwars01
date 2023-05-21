@@ -5,7 +5,7 @@ from json import JSONDecodeError
 import requests
 from requests import HTTPError
 
-from starwarsarchive.starwarsarchive import settings
+from starwarsarchive import settings
 
 logger = logging.getLogger(__name__)
 
