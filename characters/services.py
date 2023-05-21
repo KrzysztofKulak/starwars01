@@ -1,4 +1,5 @@
 import os
+from uuid import UUID
 
 import petl
 from django.core.files import File
@@ -25,3 +26,12 @@ def fetch_characters_data(star_wars_client: StarWarsClient):
         collection.csv_file = File(f)
         collection.save()
     os.remove(temp_csv_file)
+
+
+def count_values(collection_id: UUID, columns: list[str]) -> list[dict]:
+    if len(columns) < 2:
+        return []
+    collection = Collection.objects.get(pk=collection_id)
+    items = petl.fromcsv(collection.csv_file.path)
+    value_counts = list(petl.dicts(petl.valuecounts(items, *columns)))
+    return value_counts

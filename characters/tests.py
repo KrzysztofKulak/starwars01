@@ -9,7 +9,7 @@ from requests import Response, HTTPError
 from .clients.abstract import BaseClient
 from .clients.concrete import StarWarsSWAPIClient
 from .models import Collection
-from .services import fetch_characters_data
+from .services import fetch_characters_data, count_values
 
 
 def get_mock_response(expected_response: dict, expected_status_code: int = 200) -> Response:
@@ -138,6 +138,10 @@ class TestStarWarsSWAPIClient(TestCase):
 
 class TestServices(TestCase):
     def test_fetch_characters_data(self):
+        """
+        IMPROVEMENT IDEA:
+        mock_star_wars_service could be a fixture
+        """
         mock_star_wars_service = Mock()
         mock_return_value = [
             {
@@ -158,6 +162,46 @@ class TestServices(TestCase):
         collection = Collection.objects.all().first()
         self.assertEqual(Collection.objects.all().count(), 1)
         self.assertEqual(collection.csv_file.name, f"characters/{collection.id}.csv")
+        os.remove(f"media/characters/{collection.id}.csv")
+
+    def test_count_values(self):
+        """
+        IMPROVEMENT IDEA:
+        this test should be decoupled from fetch_characters_data
+        """
+        mock_star_wars_service = Mock()
+        mock_return_value = [
+            {
+                "name": "Luke Skywalker",
+                "birth_year": "19BBY",
+                "homeworld": "Tatooine",
+                "some_value": 1,
+                "date": "2014-12-20"
+            },
+            {
+                "name": "Stachu Skywalker",
+                "birth_year": "13BBY",
+                "homeworld": "Tatooine",
+                "some_value": 1,
+                "date": "2014-12-20"
+            }
+        ]
+        mock_star_wars_service.get_all_characters.return_value = mock_return_value
+        fetch_characters_data(mock_star_wars_service)
+        collection = Collection.objects.all().first()
+
+        result = count_values(collection.id, ["homeworld", "birth_year"])
+        self.assertEqual(
+            result, [
+                {'homeworld': 'Tatooine', 'birth_year': '19BBY', 'count': 1, 'frequency': 0.5},
+                {'homeworld': 'Tatooine', 'birth_year': '13BBY', 'count': 1, 'frequency': 0.5}
+            ]
+        )
+        another_result = count_values(collection.id, ["homeworld", "some_value"])
+        self.assertEqual(
+            another_result,
+            [{'homeworld': 'Tatooine', 'some_value': '1', 'count': 2, 'frequency': 1.0}]
+        )
         os.remove(f"media/characters/{collection.id}.csv")
 
 
@@ -197,10 +241,6 @@ class CollectionViewsTestCase(TestCase):
         self.assertEqual(len(response.context['collections']), 2)
 
     def test_collection_details(self):
-        """
-        IMPROVEMENT IDEA:
-        mock_star_wars_service could be a fixture
-        """
         mock_star_wars_service = Mock()
         mock_return_value = [
             {

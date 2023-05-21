@@ -13,5 +13,6 @@ Still: in it's current form the data source is strongly decoupled from the repre
 urlpatterns = [
     path('fetch', views.fetch_collection, {"star_wars_service_client": star_wars_client}, name="fetch_collection"),
     path('', views.collections_list, name="collections_list"),
-    path('<uuid:collection_id>', views.collection_details, name="collection_details")
+    path('<uuid:collection_id>', views.collection_details, name="collection_details"),
+    path('<uuid:collection_id>/counts', views.collection_value_count, name="collection_value_count")
 ]
