@@ -40,5 +40,5 @@ class StarWarsClient(BaseClient):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_all_characters_with_planets(self) -> list[dict]:
+    def get_all_characters_parsed(self) -> list[dict]:
         raise NotImplementedError

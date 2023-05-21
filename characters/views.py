@@ -14,9 +14,17 @@ from characters.models import Collection
 @csrf_exempt
 def collections(request):
     if request.method == "POST":
-        characters = StarWarsSWAPIClient().get_all_characters_with_planets()
-        characters_table = petl.fromdicts(characters)
         collection = Collection()
+        """
+        IMPROVEMENT IDEA:
+        new Collection instance could be saved with a placeholder value
+        and returned to a rendered list, but SWAPI calling and csv saving 
+        operation could be moved into a Celery task to be run asynchronously
+        by a Celery worker, where instance would be updated with the info
+        the newly created csv file.
+        """
+        characters = StarWarsSWAPIClient().get_all_characters_parsed()
+        characters_table = petl.fromdicts(characters)
         temp_csv_file = f"{collection.id}.csv"
         petl.tocsv(characters_table, temp_csv_file)
         with open(temp_csv_file, 'rb') as f:
@@ -27,7 +35,8 @@ def collections(request):
     return JsonResponse(
         {
             'results': [
-                f"{collection.id} {collection.created_at}" for collection in collections
+                f"{collection.id} {collection.created_at}"
+                for collection in collections
             ]
         },
         status=200)

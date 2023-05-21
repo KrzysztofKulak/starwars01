@@ -74,7 +74,7 @@ class TestStarWarsClient(TestCase):
         self.assertEqual(response, expected_response)
         mock_get.assert_called_once_with("https://swapi.dev/api/planets/1")
 
-    def test_get_all_characters_with_planets(self):
+    def test_get_all_characters_parsed(self):
         test_client = StarWarsSWAPIClient()
         expected_people_response = {
             "results": [
@@ -106,7 +106,7 @@ class TestStarWarsClient(TestCase):
                 get_mock_response(expected_planet_1_response),
                 get_mock_response(expected_planet_2_response)
             ]
-            response = test_client.get_all_characters_with_planets()
+            response = test_client.get_all_characters_parsed()
         self.assertEqual(response,
                          [{
                              "name": "Luke Skywalker",

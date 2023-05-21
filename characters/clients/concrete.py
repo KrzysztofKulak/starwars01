@@ -3,6 +3,9 @@ from starwarsarchive import settings
 
 
 class StarWarsSWAPIClient(StarWarsClient):
+    FIELDS_TO_BE_OMITTED = [
+        "films", "species", "url", "created", "edited", "vehicles", "starships", "date"
+    ]
     BASE_URL = settings.SWAPI_URL
 
     def get_all_characters(self) -> list[dict]:
@@ -18,14 +21,28 @@ class StarWarsSWAPIClient(StarWarsClient):
         url = f"planets/{id}"
         return self._get(url)
 
-    def get_all_characters_with_planets(self) -> list[dict]:
+    def get_all_characters_parsed(self) -> list[dict]:
         characters = self.get_all_characters()
         planets = {}
         for character in characters:
+            """ 
+            IMPROVEMENT IDEA:
+            This could be generalized to map all link-fields to a name of the resource, 
+            mapping of the field from the target resource to be used could look like:
+            {
+            "homeworld": "name",
+            "films": "title"
+            }
+            and so on, the fact that some link-fields are lists would have to be taken 
+            into consideration.
+            """
             if character["homeworld"] != "n/a":
                 if not planets.get(character["homeworld"]):
                     planets[character["homeworld"]] = self.get_planet(
                         character["homeworld"].split("/")[-2]
                     )
                 character["homeworld"] = planets[character["homeworld"]]["name"]
+            character["date"] = character["edited"]
+            for key in self.FIELDS_TO_BE_OMITTED:
+                character.pop(key, None)
         return characters
