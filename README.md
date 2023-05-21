@@ -1,5 +1,6 @@
 # starwars archive
-This app consumes StarWars API swapi.dev.
+This app consumes StarWars API swapi.dev, [which is a new address of swapi.co](https://swapi.dev/about).
+
 It fetches all the character information and stores the data from the given moment in time in form of csv files.
 
 Main page is accessible at the `/collections` url.
